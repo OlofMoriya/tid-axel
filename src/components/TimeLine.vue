@@ -1,10 +1,12 @@
 <template>
   <div class="timeline-container">
-    <!-- Display the next random number above the timeline -->
-    <div v-if="randomNumber !== null" class="random-number-display">Next Number: {{ randomNumber }}</div>
+    <!-- Display the next random number above the timeline with countdown -->
+    <div v-if="randomNumber !== null" class="random-number-display">
+      Next Number: {{ randomNumber }} (Changing in {{ countdown }} seconds)
+    </div>
     <div class="timeline">
       <div v-for="(item, index) in dots" :key="item.id" class="timeline-item">
-        <div v-if="item.type === 'dot'" class="timeline-dot" @click="dotClick(index)"></div>
+        <div v-if="item.type === 'dot'" :class="{ 'disabled-dot': dotUsed }" class="timeline-dot" @click="dotClick(index)"></div>
         <div v-else-if="item.type === 'number'" class="timeline-number">{{ item.number }}</div>
       </div>
     </div>
@@ -19,15 +21,23 @@ export default {
       dots: [{ id: 0, type: 'dot' }],
       nextId: 1,
       numbers: this.shuffleArray([1965, 2003, 2022, 1984, 1945, 1999, 2001, 1977, 1953]),
-      randomNumber: null
+      randomNumber: null,
+      countdown: 10,
+      intervalId: null,
+      dotUsed: false,
     };
   },
   created() {
-    this.randomNumber = this.numbers[this.numbers.length - 1];
+    this.setRandomNumberWithInterval();
+  },
+  beforeDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   },
   methods: {
     dotClick(index) {
-      if (this.randomNumber !== null) {
+      if (!this.dotUsed && this.randomNumber !== null) {
         const leftNumber = index > 0 && this.dots[index - 1].type === 'number' ? this.dots[index - 1].number : null;
         const rightNumber = index < this.dots.length - 1 && this.dots[index + 1].type === 'number' ? this.dots[index + 1].number : null;
 
@@ -35,18 +45,33 @@ export default {
           this.dots.splice(index, 1, { id: this.nextId++, type: 'number', number: this.randomNumber });
           this.dots.splice(index, 0, { id: this.nextId++, type: 'dot' });
           this.dots.splice(index + 2, 0, { id: this.nextId++, type: 'dot' });
-          this.numbers.pop(); // Remove the used number from the array
-          this.setNextRandomNumber();
         } else {
           console.log('Random number does not fit between adjacent numbers.');
         }
+        this.dotUsed = true; // Disable further clicks, regardless of whether the click was right or wrong
       }
     },
-    setNextRandomNumber() {
+    setRandomNumberWithInterval() {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+      }
+      this.updateRandomNumber();
+      this.intervalId = setInterval(() => {
+        if (this.countdown > 0) {
+          this.countdown -= 1;
+        } else {
+          this.updateRandomNumber();
+          this.countdown = 5;
+        }
+      }, 1000);
+    },
+    updateRandomNumber() {
       if (this.numbers.length > 0) {
-        this.randomNumber = this.numbers[this.numbers.length - 1];
+        this.randomNumber = this.numbers.pop();
+        this.dotUsed = false; // Allow dot clicks for the new number
       } else {
-        this.randomNumber = null; // No more numbers to display
+        this.randomNumber = null;
+        clearInterval(this.intervalId);
       }
     },
     shuffleArray(array) {
@@ -63,82 +88,47 @@ export default {
 };
 </script>
 
-
 <style>
+  .timeline-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
 
-.timeline-container {
-  overflow-x: auto;
-  white-space: nowrap;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-}
+  .timeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+    width: 1000px;
+    padding: 0 10px;
+  }
 
-.timeline {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  position: relative;
-  width: 1000px;
-  padding: 0 10px;
-}
+  .timeline-dot {
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border-radius: 50%;
+    position: relative;
+    border: red solid 5px;
+    z-index: 1;
+    cursor: pointer;
+  }
 
-.timeline-dot {
-  height: 20px;
-  width: 20px;
-  background-color: white;
-  border-radius: 50%;
-  position: relative;
-  border: red solid 5px;
-  z-index: 1;
-}
+  .disabled-dot {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-.timeline::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #333;
-  z-index: -1;
-}
+  .timeline-number {
+    /* Your styles for the timeline number */
+  }
 
-.timeline-dot:last-child {
-  margin-right: 0;
-}
-.clicked-dot {
-  background-color: #3498db;
-}
-.timeline-item {
-  display: flex;
-  align-items: center;
-}
+  .random-number-display {
+    /* Your styles for the random number display */
+  }
 
-.timeline-label {
-  /* Styles for your label */
-  margin: 0 10px;
-  color: #333;
-  font-weight: bold;
-}
-.timeline-number {
-  /* Styles for your number */
-  margin: 0 10px;
-  color: #3498db;
-  font-weight: bold;
-}
-.random-number-display {
-  margin-bottom: 15px;
-  font-size: 1.2em;
-  color: #3498db;
-}
-.timeline-number {
-  /* Styles for your number */
-  margin: 0 10px;
-  color: #3498db;
-  font-weight: bold;
-}
-
-/* Rest of your styles */
+  /* Add any additional styles you need here */
 </style>
