@@ -7,6 +7,7 @@
 </template>
 
 <script>
+    import {start_game} from "../../firebase"
 export default {
   data() {
     return {
@@ -23,6 +24,9 @@ export default {
     submitForm() {
       const id = this.field1;
       const name = this.field2;
+
+      const result = start_game("games", id);
+      console.log("result", result);
 
       console.log('Submitted ID:', id, 'Submitted Name:', name);
       // Further processing can be added here
