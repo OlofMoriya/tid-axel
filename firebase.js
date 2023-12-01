@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, getDoc, getDocs, setDoc, collection, doc } from "firebase/firestore";
+import { getFirestore, onSnapshot, getDoc, getDocs, setDoc, collection, doc } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -23,7 +23,7 @@ const db = getFirestore(app);
 function subscribe(collection, game_name, update) {
     const unsub = onSnapshot(doc(db, collection, game_name), (doc) => {
         console.log("Current data: ", doc.data());
-        update(doc);
+        update(doc.data());
     });
 }
 
