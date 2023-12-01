@@ -20,6 +20,17 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
+function subscribe_players(collection_name, game_name, update) {
+    const unsub = onSnapshot(collection(db, collection_name, game_name, "players"), (docs) => {
+        let players = [];
+        docs.forEach((doc)=>{
+            players.push(doc.data());
+            console.log("Current data: ", doc.data());
+        });
+        update(players);
+    });
+}
+
 function subscribe(collection, game_name, update) {
     const unsub = onSnapshot(doc(db, collection, game_name), (doc) => {
         console.log("Current data: ", doc.data());
@@ -27,29 +38,40 @@ function subscribe(collection, game_name, update) {
     });
 }
 
-async function start_game(collection_name, game_name) {
-    const querySnapshot = await getDocs(collection(db, "cards"));
-    let cards = [];
-    querySnapshot.forEach((doc) => {
+function next_card(collection_name, game_name) {
+    
+}
 
-        cards.push({url: doc.data().url, text: doc.data().text, year:doc.data().year});
-        console.log(cards);
+async function start_game(collection_name, game_name, name) {
+    const docRef = doc(db,collection_name,game_name);
+    const game = await getDoc(docRef);
+    if (!game) {
+        console.log("no game with that name, creating it...");
+        const querySnapshot = await getDocs(collection(db, "cards"));
+        let cards = [];
+        querySnapshot.forEach((doc) => {
 
-    });
+            cards.push({url: doc.data().url, text: doc.data().text, year:doc.data().year});
+            console.log(cards);
 
-    function getRandomCards(cards) {
-      const shuffledCards = cards.sort(() => 0.5 - Math.random()); // Shuffle the array
-      return shuffledCards.slice(0, 5); // Get the first 5 elements of the shuffled array
+        });
+
+        function getRandomCards(cards) {
+          const shuffledCards = cards.sort(() => 0.5 - Math.random()); // Shuffle the array
+          return shuffledCards.slice(0, 5); // Get the first 5 elements of the shuffled array
+        }
+
+        const randomCards = getRandomCards(cards);
+        const obj = {
+            name: game_name,
+            current_card: 0,
+            cards: randomCards,
+        }; 
+        console.log("setting doc", obj); 
+        return await setDoc(doc(db, "games", game_name), obj);
     }
-
-    const randomCards = getRandomCards(cards);
-    const obj = {
-        name: game_name,
-        current_card: 0,
-        cards: randomCards,
-    }; 
-    console.log("setting doc", obj); 
-    return await setDoc(doc(db, "games", game_name), obj);
+    
+    return update_player(collection_name, game_name, name, []);
 }
 
 async function update_player(collection, game_name, name, cards) {
@@ -59,4 +81,4 @@ async function update_player(collection, game_name, name, cards) {
     });
 }
 
-export { db, subscribe, start_game, update_player };
+export { subscribe_players, db, subscribe, start_game, update_player };

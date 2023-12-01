@@ -6,7 +6,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { start_game } from "../../firebase";
 import { useRouter } from "vue-router";
