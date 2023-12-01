@@ -1,7 +1,7 @@
 <template>
   <div class="timeline-container">
-    <!-- Displaying the random number above the timeline -->
-    <div class="random-number-display">Random Number: {{ randomNumber }}</div>
+    <!-- Display the next random number above the timeline -->
+    <div v-if="randomNumber !== null" class="random-number-display">Next Number: {{ randomNumber }}</div>
     <div class="timeline">
       <div v-for="(item, index) in dots" :key="item.id" class="timeline-item">
         <div v-if="item.type === 'dot'" class="timeline-dot" @click="dotClick(index)"></div>
@@ -18,24 +18,46 @@ export default {
     return {
       dots: [{ id: 0, type: 'dot' }],
       nextId: 1,
-      numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9], // Array of numbers
+      numbers: this.shuffleArray([1965, 2003, 2022, 1984, 1945, 1999, 2001, 1977, 1953]),
       randomNumber: null
     };
   },
   created() {
-    this.generateRandomNumber();
+    this.randomNumber = this.numbers[this.numbers.length - 1];
   },
   methods: {
     dotClick(index) {
       if (this.randomNumber !== null) {
-        this.dots.splice(index, 1, { id: this.nextId++, type: 'number', number: this.randomNumber });
-        this.dots.splice(index, 0, { id: this.nextId++, type: 'dot' });
-        this.dots.splice(index + 2, 0, { id: this.nextId++, type: 'dot' });
-        this.generateRandomNumber(); // Generate a new random number
+        const leftNumber = index > 0 && this.dots[index - 1].type === 'number' ? this.dots[index - 1].number : null;
+        const rightNumber = index < this.dots.length - 1 && this.dots[index + 1].type === 'number' ? this.dots[index + 1].number : null;
+
+        if (this.isValidNumber(this.randomNumber, leftNumber, rightNumber)) {
+          this.dots.splice(index, 1, { id: this.nextId++, type: 'number', number: this.randomNumber });
+          this.dots.splice(index, 0, { id: this.nextId++, type: 'dot' });
+          this.dots.splice(index + 2, 0, { id: this.nextId++, type: 'dot' });
+          this.numbers.pop(); // Remove the used number from the array
+          this.setNextRandomNumber();
+        } else {
+          console.log('Random number does not fit between adjacent numbers.');
+        }
       }
     },
-    generateRandomNumber() {
-      this.randomNumber = this.numbers[Math.floor(Math.random() * this.numbers.length)];
+    setNextRandomNumber() {
+      if (this.numbers.length > 0) {
+        this.randomNumber = this.numbers[this.numbers.length - 1];
+      } else {
+        this.randomNumber = null; // No more numbers to display
+      }
+    },
+    shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    },
+    isValidNumber(number, leftNumber, rightNumber) {
+      return (!leftNumber || number >= leftNumber) && (!rightNumber || number <= rightNumber);
     }
   },
 };
