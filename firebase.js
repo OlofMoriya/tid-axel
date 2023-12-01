@@ -38,8 +38,9 @@ function subscribe(collection, game_name, update) {
     });
 }
 
-function next_card(collection_name, game_name) {
-    
+function next_card(collection_name, game_name, new_index) {
+    const docRef = doc(db,collection_name,game_name);
+    await setDoc(docRef, {current_card: new_index});
 }
 
 async function start_game(collection_name, game_name, name) {

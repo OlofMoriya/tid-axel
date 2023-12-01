@@ -19,13 +19,13 @@ export default {
   setup() {
     const route = useRoute();
     const currentCard = ref(null);
+      const id = route.params.id;
 
     onMounted(() => {
-      subscribe("games", "hast", (data) => {
-        currentCard.value = data.card[current_card];
+      subscribe("games", id, (data) => {
+        currentCard.value = data.card[data.current_card];
       });
     });
-    const id = route.params.id;
     return {
       currentCard,
       id,
