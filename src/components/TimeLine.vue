@@ -1,11 +1,20 @@
 <template>
   <div class="timeline-container">
     <!-- Display the next random number above the timeline -->
-    <div v-if="randomNumber !== null" class="random-number-display">Next Number: {{ randomNumber }}</div>
+    <div v-if="randomNumber !== null" class="random-number-display">
+      Next Number: {{ randomNumber }}
+    </div>
     <div class="timeline">
       <div v-for="(item, index) in dots" :key="item.id" class="timeline-item">
-        <div v-if="item.type === 'dot'" class="timeline-dot" @click="dotClick(index)"></div>
-        <div v-else-if="item.type === 'number'" class="timeline-number">{{ item.number }}</div>
+        <div
+          v-if="item.type === 'dot'"
+          class="timeline-dot"
+          @click="dotClick(index)"
+        ></div>
+        <div v-else-if="item.type === 'number'" class="timeline-number">
+          {{ item.number }}
+        </div>
+        =
       </div>
     </div>
   </div>
@@ -14,12 +23,15 @@
 <script>
 export default {
   name: "Timeline",
+  props: [currentCard],
   data() {
     return {
-      dots: [{ id: 0, type: 'dot' }],
+      dots: [{ id: 0, type: "dot" }],
       nextId: 1,
-      numbers: this.shuffleArray([1965, 2003, 2022, 1984, 1945, 1999, 2001, 1977, 1953]),
-      randomNumber: null
+      numbers: this.shuffleArray([
+        1965, 2003, 2022, 1984, 1945, 1999, 2001, 1977, 1953,
+      ]),
+      randomNumber: null,
     };
   },
   created() {
@@ -28,17 +40,27 @@ export default {
   methods: {
     dotClick(index) {
       if (this.randomNumber !== null) {
-        const leftNumber = index > 0 && this.dots[index - 1].type === 'number' ? this.dots[index - 1].number : null;
-        const rightNumber = index < this.dots.length - 1 && this.dots[index + 1].type === 'number' ? this.dots[index + 1].number : null;
+        const leftNumber =
+          index > 0 && this.dots[index - 1].type === "number"
+            ? this.dots[index - 1].number
+            : null;
+        const rightNumber =
+          index < this.dots.length - 1 && this.dots[index + 1].type === "number"
+            ? this.dots[index + 1].number
+            : null;
 
         if (this.isValidNumber(this.randomNumber, leftNumber, rightNumber)) {
-          this.dots.splice(index, 1, { id: this.nextId++, type: 'number', number: this.randomNumber });
-          this.dots.splice(index, 0, { id: this.nextId++, type: 'dot' });
-          this.dots.splice(index + 2, 0, { id: this.nextId++, type: 'dot' });
+          this.dots.splice(index, 1, {
+            id: this.nextId++,
+            type: "number",
+            number: this.randomNumber,
+          });
+          this.dots.splice(index, 0, { id: this.nextId++, type: "dot" });
+          this.dots.splice(index + 2, 0, { id: this.nextId++, type: "dot" });
           this.numbers.pop(); // Remove the used number from the array
           this.setNextRandomNumber();
         } else {
-          console.log('Random number does not fit between adjacent numbers.');
+          console.log("Random number does not fit between adjacent numbers.");
         }
       }
     },
@@ -57,15 +79,16 @@ export default {
       return array;
     },
     isValidNumber(number, leftNumber, rightNumber) {
-      return (!leftNumber || number >= leftNumber) && (!rightNumber || number <= rightNumber);
-    }
+      return (
+        (!leftNumber || number >= leftNumber) &&
+        (!rightNumber || number <= rightNumber)
+      );
+    },
   },
 };
 </script>
 
-
 <style>
-
 .timeline-container {
   overflow-x: auto;
   white-space: nowrap;
