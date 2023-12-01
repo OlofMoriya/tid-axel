@@ -46,7 +46,7 @@ function next_card(collection_name, game_name, new_index) {
 async function start_game(collection_name, game_name, name) {
     const docRef = doc(db,collection_name,game_name);
     const game = await getDoc(docRef);
-    if (!game) {
+    if (!game.data()) {
         console.log("no game with that name, creating it...");
         const querySnapshot = await getDocs(collection(db, "cards"));
         let cards = [];
