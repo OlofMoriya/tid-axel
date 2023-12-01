@@ -22,7 +22,7 @@ export default {
       nextId: 1,
       numbers: this.shuffleArray([1965, 2003, 2022, 1984, 1945, 1999, 2001, 1977, 1953]),
       randomNumber: null,
-      countdown: 10,
+      countdown: 5,
       intervalId: null,
       dotUsed: false,
     };
