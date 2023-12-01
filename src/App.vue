@@ -1,9 +1,5 @@
-<script setup>
-import Game from "./pages/Game.vue";
-</script>
-
 <template>
-  <Game msg="Vite + Vue" />
+  <router-view></router-view>
 </template>
 
 <style scoped>
