@@ -1,14 +1,13 @@
 <template>
   <div class="timeline-container">
     <div class="timeline">
-      <div class="timeline-event" v-for="event in events" :key="event.id">
-        <div class="event-dot"></div>
-        <div class="event-content">
-          <h3>{{ event.title }}</h3>
-          <span>{{ event.date }}</span>
-          <p>{{ event.description }}</p>
-        </div>
-      </div>
+      <div
+        class="timeline-dot"
+        v-for="(dot, index) in dots"
+        :key="dot.id"
+        :class="{ 'clicked-dot': dot.clicked }"
+        @click="dotClick(index)"
+      ></div>
     </div>
   </div>
 </template>
@@ -18,10 +17,23 @@ export default {
   name: "Timeline",
   data() {
     return {
-      events: [
-        // Your event data
-      ],
+      dots: [{ id: 0, clicked: false }],
+      nextId: 1,
     };
+  },
+  methods: {
+    dotClick(index) {
+      const middleIndex = Math.floor(this.dots.length / 2);
+      console.log(this.dots[index], "middleIndex");
+      this.dots[index].clicked = true;
+
+      const newDotBefore = { id: this.nextId + 1, clicked: false };
+      const newDotAfter = { id: this.nextId - 1, clicked: false };
+
+      this.dots.splice(middleIndex, 0, newDotBefore);
+      this.dots.splice(middleIndex + 1, 0, newDotAfter);
+      //}
+    },
   },
 };
 </script>
@@ -30,30 +42,48 @@ export default {
 .timeline-container {
   overflow-x: auto;
   white-space: nowrap;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .timeline {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
+  position: relative;
+  width: 1000px;
+  padding: 0 10px;
 }
 
-.timeline-event {
-  display: inline-flex;
-  align-items: center;
-  margin-right: 20px; /* Adjust spacing between events */
-}
-
-.event-dot {
-  height: 20px; /* Size of the dot */
-  width: 20px; /* Size of the dot */
-  background-color: #555; /* Color of the dot */
+.timeline-dot {
+  height: 20px;
+  width: 20px;
+  background-color: white;
   border-radius: 50%;
   position: relative;
+  border: red solid 5px;
+  z-index: 1;
 }
 
-.event-content {
-  margin-left: 10px;
-  /* Additional styling for event content */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #333;
+  z-index: -1;
 }
+
+.timeline-dot:last-child {
+  margin-right: 0;
+}
+.clicked-dot {
+  background-color: #3498db;
+}
+
+/* Rest of your styles */
 </style>
