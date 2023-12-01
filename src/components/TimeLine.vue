@@ -23,7 +23,7 @@
 <script>
 export default {
   name: "Timeline",
-  props: [currentCard],
+
   data() {
     return {
       dots: [{ id: 0, type: "dot" }],

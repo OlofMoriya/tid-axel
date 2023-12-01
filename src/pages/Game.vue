@@ -5,25 +5,27 @@
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
 import Timeline from "../components/TimeLine.vue";
 import { subscribe } from "../../firebase";
 
 export default {
   name: "Game",
-  data() {
-    return {
-      currentCard: number,
-    };
-  },
-
   components: {
     Timeline,
   },
+  setup() {
+    const currentCard = ref(null);
 
-  mounted() {
-    subscribe("games", "hast", (data) => {
-      this.currentCard = data.card[current_card];
+    onMounted(() => {
+      subscribe("games", "hast", (data) => {
+        currentCard.value = data.card[current_card];
+      });
     });
+
+    return {
+      currentCard,
+    };
   },
 };
 </script>

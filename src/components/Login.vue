@@ -6,33 +6,29 @@
   </div>
 </template>
 
-<script>
-    import {start_game} from "../../firebase"
-export default {
-  data() {
-    return {
-      field1: '',
-      field2: ''
-    };
-  },
-  computed: {
-    isButtonDisabled() {
-      return this.field1 === '' || this.field2 === '';
-    }
-  },
-  methods: {
-    submitForm() {
-      const id = this.field1;
-      const name = this.field2;
+<script setup>
+import { start_game } from "../../firebase";
+import { useRouter } from "vue-router";
+import { ref, computed } from "vue";
 
-      const result = start_game("games", id);
-      console.log("result", result);
+const field1 = ref("");
+const field2 = ref("");
+const router = useRouter();
 
-      console.log('Submitted ID:', id, 'Submitted Name:', name);
-      // Further processing can be added here
-    }
-  }
-}
+const isButtonDisabled = computed(() => {
+  return field1.value === "" || field2.value === "";
+});
+
+const submitForm = () => {
+  const result = start_game("games", field1.value);
+  console.log("result", result);
+  console.log("Submitted ID:", field1.value, "Submitted Name:", field2.value);
+
+  router.push({
+    path: "/game",
+    query: { id: field1.value, name: field2.value },
+  });
+};
 </script>
 
 <style>
@@ -61,7 +57,7 @@ button {
   padding: 10px;
   border: none;
   border-radius: 5px;
-  background-color: #4CAF50; /* Example button color */
+  background-color: #4caf50; /* Example button color */
   color: white;
   margin-top: 10px; /* Space above the button */
 }
