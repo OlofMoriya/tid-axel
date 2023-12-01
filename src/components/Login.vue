@@ -6,6 +6,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { start_game } from "../../firebase";
 import { useRouter } from "vue-router";
@@ -29,6 +30,7 @@ const submitForm = () => {
     query: { id: field1.value, name: field2.value },
   });
 };
+
 </script>
 
 <style>
