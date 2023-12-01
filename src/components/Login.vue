@@ -6,6 +6,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { start_game } from "../../firebase";
 import { useRouter } from "vue-router";
@@ -29,6 +30,7 @@ const submitForm = () => {
     params: { id: field1.value, name: field2.value }, // Assuming you only want to pass `id` as a route parameter
   });
 };
+
 </script>
 
 <style>
