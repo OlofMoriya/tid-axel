@@ -35,19 +35,19 @@ export default {
   },
   setup(props) {
       const id = props.id;
+      const dotUsed = ref(false);
 
       const currentCard = ref(undefined);
       const currentCardImage = computed(()=>"/public/"+currentCard.value?.url);
-      watchEffect(()=>{currentCard.value = props.currentCard});
-
-
+      watchEffect(()=>{
+          currentCard.value = props.currentCard
+          dotUsed.value = false;
+      });
 
     const dots = ref([{ id: 0, type: "dot" }]);
     let nextId = 1;
     
     const countdown = ref(5);
-    const intervalId = ref(null);
-    const dotUsed = ref(false);
 
     function isValidNumber(number, leftNumber, rightNumber) {
       return (
