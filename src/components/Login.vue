@@ -19,8 +19,8 @@ const isButtonDisabled = computed(() => {
   return field1.value === "" || field2.value === "";
 });
 
-const submitForm = () => {
-  const result = start_game("games", field1.value);
+const submitForm = async () => {
+  const result = await start_game("games", field1.value);
   console.log("result", result);
   console.log("Submitted ID:", field1.value, "Submitted Name:", field2.value);
 

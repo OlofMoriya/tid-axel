@@ -38,9 +38,20 @@ function subscribe(collection, game_name, update) {
     });
 }
 
-function next_card(collection_name, game_name, new_index) {
-    const docRef = doc(db,collection_name,game_name);
-    await setDoc(docRef, {current_card: new_index});
+async function next_card(collection_name, game_name, game, new_index) {
+    const docRef = doc(db, collection_name, game_name);
+    console.log("doc to set", docRef);
+    await setDoc(docRef, {...game, current_card: new_index});
+}
+
+async function get_cards() {
+    const querySnapshot = await getDocs(collection(db, "cards"));
+    let cards = [];
+    querySnapshot.forEach((doc) => {
+        cards.push({id:doc.id, text:doc.data().text, url: doc.data().url, year: doc.data().year});
+        console.log("card ids: ", cards);
+    });
+    return cards;
 }
 
 async function start_game(collection_name, game_name, name) {
@@ -51,10 +62,8 @@ async function start_game(collection_name, game_name, name) {
         const querySnapshot = await getDocs(collection(db, "cards"));
         let cards = [];
         querySnapshot.forEach((doc) => {
-
-            cards.push({url: doc.data().url, text: doc.data().text, year:doc.data().year});
-            console.log(cards);
-
+            cards.push({id:doc.id, text:doc.data().text, url: doc.data().url, year: doc.data().year});
+            console.log("card ids: ", cards);
         });
 
         function getRandomCards(cards) {
@@ -68,7 +77,7 @@ async function start_game(collection_name, game_name, name) {
             current_card: 0,
             cards: randomCards,
         }; 
-        console.log("setting doc", obj); 
+
         return await setDoc(doc(db, "games", game_name), obj);
     }
     
@@ -82,4 +91,4 @@ async function update_player(collection, game_name, name, cards) {
     });
 }
 
-export { subscribe_players, db, subscribe, start_game, update_player };
+export { subscribe_players, get_cards, db, subscribe, start_game, update_player, next_card };
