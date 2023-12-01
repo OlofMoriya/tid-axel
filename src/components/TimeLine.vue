@@ -24,7 +24,11 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 
 export default {
   name: "Timeline",
-  setup() {
+  props: {
+    id: Number,
+  },
+  setup(props) {
+    const id = props.id;
     const dots = ref([{ id: 0, type: "dot" }]);
     let nextId = 1;
     const numbers = ref(
@@ -108,7 +112,7 @@ export default {
       }
     });
 
-    return { dots, randomNumber, countdown, dotClick, dotUsed };
+    return { dots, randomNumber, countdown, dotClick, dotUsed, id };
   },
 };
 </script>

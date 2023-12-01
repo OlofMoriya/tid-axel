@@ -26,8 +26,8 @@ const submitForm = () => {
   console.log("Submitted ID:", field1.value, "Submitted Name:", field2.value);
 
   router.push({
-    path: "/game",
-    query: { id: field1.value, name: field2.value },
+    name: "Game", // Using the name of the route
+    params: { id: field1.value, name: field2.value }, // Assuming you only want to pass `id` as a route parameter
   });
 };
 
