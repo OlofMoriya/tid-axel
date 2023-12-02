@@ -59,16 +59,17 @@ export default {
     function dotClick(index) {
       if (!dotUsed.value && currentCard.value?.year) {
         const leftNumber =
-          index > 0 && dots.value[index - 1]?.type === "number"
+          index > 0 && dots.value[index - 1]?.type === "card"
             ? dots.value[index - 1].number
             : null;
 
         const rightNumber =
           index < dots.value.length - 1 &&
-          dots.value[index + 1]?.type === "number"
+          dots.value[index + 1]?.type === "card"
             ? dots.value[index + 1].number
             : null;
-
+        
+          console.log("validate: ", currentCard.value?.year, leftNumber, rightNumber);
         if (isValidNumber(currentCard.value?.year, leftNumber, rightNumber)) {
           dots.value.splice(index, 1, {
             id: nextId++,
